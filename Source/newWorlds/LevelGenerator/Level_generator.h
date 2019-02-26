@@ -21,32 +21,45 @@ protected:
 	void SetVariablesStart(); 
 private:	
 	//Movement
-	int Move_Options;
-	int Move_Choice;
-	int Movement_Direction_Search;
-	//TODO add arrays for Movement_Directions and Steps_Taken
+	TArray<bool> Arr_Movement_Directions;
+	TArray<int32> Arr_Steps_Taken;
+
+	int32 Move_Options;
+	int32 Move_Choice;
+	int32 Movement_Direction_Search;
+	
 	
 	//Level properties
-	int Number_of_Rooms = 0;
-	int Level_Dimensions_X = 0;
-	int Level_Dimensions_Y = 0;
+	int32 Number_of_Rooms = 0;
+	int32 Level_Dimensions_X = 0;
+	int32 Level_Dimensions_Y = 0;
 	FVector Starting_Position;
 	FVector2D Level_Dimensions;
 	FVector2D Room_Dimensions;
 	float Branch_Chance = 0;
-	int Extra_Connections;
-	int Max_Branch_lenght;
+	int32 Extra_Connections;
+	int32 Max_Branch_lenght;
 
 	//
-	struct FRoomsPosition {
-		int Current_Room;
-		int Previous_Room;
+	struct Connected_Rooms {
+		bool left = false;
+		bool right = false;
+		bool up = false;
+		bool down = false;
+	};
+	TArray<Connected_Rooms> Arr_Connected_Rooms;
+	TArray<bool> Arr_Rooms_Placed;
+
+	TArray<TSubclassOf<AActor>> Arr_Rooms;
+
+	struct Rooms_Position {
+		int32 Current_Room;
+		int32 Previous_Room;
 		FVector Position_Current_Room;
 	};
 	float Room_Rotation;
-	int Main_Loop_Index;
-	int Extra_Connections_Attempts;
+	int32 Main_Loop_Index;
+	int32 Extra_Connections_Attempts;
 	
 
-	//TODO add arrays for Room_Placed, Connected_Rooms and Rooms
 };
