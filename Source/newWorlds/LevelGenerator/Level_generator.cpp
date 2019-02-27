@@ -17,9 +17,28 @@ void ALevel_generator::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	SetVariablesStart();
+
+}
+
+void ALevel_generator::Generate_Level() {
+
+
 }
 
 void ALevel_generator::SetVariablesStart() {
+	
+	
+	
+	Previous_Room = -1;
+	Arr_Steps_Taken.Empty();
 
+	Level_Dimensions_X = Level_Dimensions.X;
+	Level_Dimensions_Y = Level_Dimensions.Y;
 
+	//TODO for each destroy actor Rooms
+
+	Arr_Rooms.Empty();
+	
+	UE_LOG(LogTemp, Warning, TEXT("%d"),Arr_Rooms.GetSlack());
 }

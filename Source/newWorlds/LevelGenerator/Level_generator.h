@@ -19,7 +19,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	void SetVariablesStart(); 
+
 private:	
+	void Generate_Level();
 	//Movement
 	TArray<bool> Arr_Movement_Directions;
 	TArray<int32> Arr_Steps_Taken;
@@ -30,15 +32,24 @@ private:
 	
 	
 	//Level properties
-	int32 Number_of_Rooms = 0;
-	int32 Level_Dimensions_X = 0;
-	int32 Level_Dimensions_Y = 0;
-	FVector Starting_Position;
-	FVector2D Level_Dimensions;
-	FVector2D Room_Dimensions;
-	float Branch_Chance = 0;
+	UPROPERTY(EditDefaultsOnly, Category = "Level properties")
+	int32 Number_of_Rooms;
+	UPROPERTY(EditDefaultsOnly, Category = "Level properties")
+	float Branch_Chance;
+	UPROPERTY(EditDefaultsOnly, Category = "Level properties")
 	int32 Extra_Connections;
+	UPROPERTY(EditDefaultsOnly, Category = "Level properties")
 	int32 Max_Branch_lenght;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Level properties")
+	FVector Starting_Position;
+	UPROPERTY(EditDefaultsOnly, Category = "Level properties")
+	FVector2D Level_Dimensions;
+	UPROPERTY(EditDefaultsOnly, Category = "Level properties")
+	FVector2D Room_Dimensions;
+	
+	int32 Level_Dimensions_X;
+	int32 Level_Dimensions_Y;
 
 	//
 	struct Connected_Rooms {
@@ -52,11 +63,10 @@ private:
 
 	TArray<TSubclassOf<AActor>> Arr_Rooms;
 
-	struct Rooms_Position {
-		int32 Current_Room;
-		int32 Previous_Room;
-		FVector Position_Current_Room;
-	};
+	
+	int32 Current_Room;
+	int32 Previous_Room;
+	FVector Position_Current_Room;
 	float Room_Rotation;
 	int32 Main_Loop_Index;
 	int32 Extra_Connections_Attempts;
