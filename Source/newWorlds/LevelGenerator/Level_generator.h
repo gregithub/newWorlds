@@ -15,10 +15,14 @@ public:
 	// Sets default values for this actor's properties
 	ALevel_generator();
 
+	void PrintLogs();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	void SetVariablesStart(); 
+
+	int GetMiddleRoom();
+	bool IsFirstRoom();
 
 private:	
 	void Generate_Level();
@@ -47,6 +51,8 @@ private:
 	FVector2D Level_Dimensions;
 	UPROPERTY(EditDefaultsOnly, Category = "Level properties")
 	FVector2D Room_Dimensions;
+
+	int32 Dimension_size;
 	
 	int32 Level_Dimensions_X;
 	int32 Level_Dimensions_Y;
