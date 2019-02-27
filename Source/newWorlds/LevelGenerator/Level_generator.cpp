@@ -16,13 +16,25 @@ ALevel_generator::ALevel_generator()
 void ALevel_generator::BeginPlay()
 {
 	Super::BeginPlay();
-	
 	SetVariablesStart();
 
+	Generate_Level();
 }
 
 void ALevel_generator::Generate_Level() {
+	for (int i = 0; i < Number_of_Rooms; i++) {
+		Main_Loop_Index = i;
 
+		//Alocate room
+		Arr_Steps_Taken.Add(Current_Room);
+		Arr_Rooms_Placed.Insert(true, Current_Room);
+
+
+		if (IsFirstRoom()) {
+
+		}
+
+	}
 
 }
 
@@ -51,14 +63,25 @@ void ALevel_generator::SetVariablesStart() {
 
 	PrintLogs();
 }
+void ALevel_generator::LRUD_sequence() {
+	//LEFT
+	//Can move to the left?
+	if ((Current_Room % (int32)Level_Dimensions.X) > 0) {
+		//Is room to the left?
+		if (Arr_Rooms_Placed[Current_Room-1]) {
+			Arr_Movement_Directions.Add(false);
+			//TODO finish
+		}
+	}
+}
 
 int ALevel_generator::GetMiddleRoom() {
-	float varX = Level_Dimensions_X * 0.5;
-	float varY = Level_Dimensions_Y * 0.5;
+	float varX = Level_Dimensions.X * 0.5;
+	float varY = Level_Dimensions.Y * 0.5;
 	varX = floor(varX);
 	varY = floor(varY);
 
-	return varX + (varY*Level_Dimensions_X);
+	return varX + (varY*Level_Dimensions.X);
 }
 bool ALevel_generator::IsFirstRoom() {
 	return Previous_Room == -1;

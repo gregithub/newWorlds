@@ -26,6 +26,8 @@ protected:
 
 private:	
 	void Generate_Level();
+	//LRUD - left right up down
+	void LRUD_sequence();
 	//Movement
 	TArray<bool> Arr_Movement_Directions;
 	TArray<int32> Arr_Steps_Taken;
@@ -54,8 +56,7 @@ private:
 
 	int32 Dimension_size;
 	
-	int32 Level_Dimensions_X;
-	int32 Level_Dimensions_Y;
+	
 
 	//
 	struct Connected_Rooms {
