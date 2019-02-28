@@ -70,9 +70,31 @@ void ALevel_generator::LRUD_sequence() {
 		//Is room to the left?
 		if (Arr_Rooms_Placed[Current_Room-1]) {
 			Arr_Movement_Directions.Add(false);
-			//TODO finish
+		}
+		else {
+			//if can move to left and no room there TRUE
+			Arr_Movement_Directions.Add(true);
 		}
 	}
+	else {
+		Arr_Movement_Directions.Add(false);
+	}
+	//RIGHT
+	//Can move to the right?
+	if ((Current_Room % (int32)Level_Dimensions.X) < (Level_Dimensions.X - 1)) {
+		//Is room to the right?
+		if (Arr_Rooms_Placed[Current_Room + 1]) {
+			Arr_Movement_Directions.Add(false);
+		}
+		else {
+			Arr_Movement_Directions.Add(true);
+		}
+	}
+	else {
+		Arr_Movement_Directions.Add(false);
+	}
+
+
 }
 
 int ALevel_generator::GetMiddleRoom() {
