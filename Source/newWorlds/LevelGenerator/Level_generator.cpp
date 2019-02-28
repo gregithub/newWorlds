@@ -31,9 +31,13 @@ void ALevel_generator::Generate_Level() {
 
 
 		if (IsFirstRoom()) {
-
+			LRUD_sequence();
+		}
+		else {
+			//TODO next step
 		}
 
+		
 	}
 
 }
@@ -124,6 +128,65 @@ void ALevel_generator::LRUD_sequence() {
 		Arr_Movement_Directions.Add(false);
 	}
 
+	if (IsMoveNotStuck()) { //choose
+		//Choose random direction to move
+		Move_Choice = FMath::RandRange(1, Move_Options);
+		for (int32 index = 0; index != Arr_Movement_Directions.Num(); index++) {
+			if (Arr_Movement_Directions[index]) {
+				Movement_Direction_Search += 1;
+				if (Move_Choice == Movement_Direction_Search) {
+					Previous_Room = Current_Room;
+					switch (index)
+					{
+					case 0:
+						Current_Room -= 1;
+						break;
+					case 1:
+						Current_Room += 1;
+						break;
+					case 2:
+						Current_Room -= (int32)Level_Dimensions.X;
+						break;
+					case 3:
+						Current_Room += (int32)Level_Dimensions.X;
+						break;
+					default:
+						break;
+					}
+					ClearVariables();
+				}
+			}
+		}
+	}
+	else { //try again
+		Main_Loop_Index -= Main_Loop_Index;
+		Current_Room = Arr_Steps_Taken[Main_Loop_Index];
+
+		//Reset 
+		Arr_Movement_Directions.Empty();
+		Move_Options = 0;
+		//TODO check if its working properly
+		LRUD_sequence();	//!!
+	}
+
+	
+
+}
+
+
+bool ALevel_generator::IsMoveNotStuck() {
+	//TRUE - choose, FALSE - try again
+	for (auto& Mov : Arr_Movement_Directions) {
+		if (Mov) {
+			Move_Options += 1;
+		}
+	}
+	if (Move_Options > 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 int ALevel_generator::GetMiddleRoom() {
@@ -145,4 +208,9 @@ void ALevel_generator::PrintLogs() {
 	UE_LOG(LogTemp, Warning, TEXT("Current_Room: %d"), Current_Room);
 	UE_LOG(LogTemp, Warning, TEXT("IsFirstRoom set: %s"),
 		(IsFirstRoom() ? TEXT("True") : TEXT("False")));
+}
+void ALevel_generator::ClearVariables() {
+	Arr_Movement_Directions.Empty();
+	Move_Options = 0;
+	Movement_Direction_Search = 0;
 }

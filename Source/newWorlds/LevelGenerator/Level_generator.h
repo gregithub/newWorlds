@@ -28,6 +28,8 @@ private:
 	void Generate_Level();
 	//LRUD - left right up down
 	void LRUD_sequence();
+	bool IsMoveNotStuck(); //TRUE - choose, FALSE - try again
+	void ClearVariables();
 	//Movement
 	TArray<bool> Arr_Movement_Directions;
 	TArray<int32> Arr_Steps_Taken;
