@@ -5,10 +5,10 @@
 // Sets default values
 ALevel_generator::ALevel_generator()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-	
-	
+
+
 
 }
 
@@ -34,7 +34,40 @@ void ALevel_generator::Generate_Level() {
 			LRUD_sequence();
 		}
 		else {
-			//TODO next step
+			//Inform about connected rooms
+			Connected_Rooms Connection;
+			if ((Current_Room - Previous_Room) == 1)
+				Connection.left = true;
+			if ((Current_Room - Previous_Room) == -1)
+				Connection.right = true;
+			if ((Current_Room - Previous_Room) == Level_Dimensions.X)
+				Connection.up = true;
+			if ((Current_Room - Previous_Room) == (Level_Dimensions.X * -1))
+				Connection.down = true;
+
+			Arr_Connected_Rooms[Current_Room] = Connection;
+
+			//Check if map is full
+
+			if (Arr_Steps_Taken.Num() < (Level_Dimensions.X * Level_Dimensions.Y)){
+				//Random chance to step back
+				if (FMath::RandRange(0.f, 1.f) > Branch_Chance) {
+					LRUD_sequence();
+				}
+				else {
+					//step back
+					//return at least 0 
+					Main_Loop_Index = FMath::Max((Main_Loop_Index - (FMath::RandRange(1, Max_Branch_lenght))), 0);
+					Current_Room = Arr_Steps_Taken[Main_Loop_Index];
+
+					LRUD_sequence();
+				}
+			}
+			else {
+				//break main loop if full
+				UE_LOG(LogTemp, Warning, TEXT("MAP IS FULL"));
+				break;
+			}
 		}
 
 		
@@ -131,7 +164,7 @@ void ALevel_generator::LRUD_sequence() {
 	if (IsMoveNotStuck()) { //choose
 		//Choose random direction to move
 		Move_Choice = FMath::RandRange(1, Move_Options);
-		for (int32 index = 0; index != Arr_Movement_Directions.Num(); index++) {
+		for (int32 index = 0; index <= Arr_Movement_Directions.Num(); index++) {
 			if (Arr_Movement_Directions[index]) {
 				Movement_Direction_Search += 1;
 				if (Move_Choice == Movement_Direction_Search) {
@@ -145,10 +178,10 @@ void ALevel_generator::LRUD_sequence() {
 						Current_Room += 1;
 						break;
 					case 2:
-						Current_Room -= (int32)Level_Dimensions.X;
+						Current_Room -= Level_Dimensions.X;
 						break;
 					case 3:
-						Current_Room += (int32)Level_Dimensions.X;
+						Current_Room += Level_Dimensions.X;
 						break;
 					default:
 						break;
@@ -166,7 +199,7 @@ void ALevel_generator::LRUD_sequence() {
 		Arr_Movement_Directions.Empty();
 		Move_Options = 0;
 		//TODO check if its working properly
-		LRUD_sequence();	//!!
+		//LRUD_sequence();	//!!
 	}
 
 	
