@@ -87,13 +87,42 @@ void ALevel_generator::LRUD_sequence() {
 			Arr_Movement_Directions.Add(false);
 		}
 		else {
+			//if can move to left and no room there TRUE
 			Arr_Movement_Directions.Add(true);
 		}
 	}
 	else {
 		Arr_Movement_Directions.Add(false);
 	}
-
+	//UP
+	//Can move up?
+	if (Current_Room >= (int32)Level_Dimensions.X) {
+		//Is room up?
+		if (Arr_Rooms_Placed[Current_Room - (int32)Level_Dimensions.X]) {
+			Arr_Movement_Directions.Add(false);
+		}
+		else {
+			//if can move to left and no room there TRUE
+			Arr_Movement_Directions.Add(true);
+		}
+	}
+	else {
+		Arr_Movement_Directions.Add(false);
+	}
+	//DOWN
+	//Can move down?
+	if (Current_Room < ((int32)Level_Dimensions.X * ((int32)Level_Dimensions.Y - 1))) {
+		//Is room down?
+		if (Arr_Rooms_Placed[Current_Room + (int32)Level_Dimensions.X]) {
+			Arr_Movement_Directions.Add(false);
+		}
+		else {
+			Arr_Movement_Directions.Add(true);
+		}
+	}
+	else {
+		Arr_Movement_Directions.Add(false);
+	}
 
 }
 
