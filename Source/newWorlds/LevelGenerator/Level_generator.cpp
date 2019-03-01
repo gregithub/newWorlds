@@ -18,10 +18,11 @@ void ALevel_generator::BeginPlay()
 	Super::BeginPlay();
 	SetVariablesStart();
 
-	Generate_Level();
+	Generate_Layout(); 
+	Gemerate_Connections();
 }
 
-void ALevel_generator::Generate_Level() {
+void ALevel_generator::Generate_Layout() {
 	for (int i = 0; i < Number_of_Rooms; i++) {
 		Main_Loop_Index = i;
 
@@ -69,10 +70,38 @@ void ALevel_generator::Generate_Level() {
 				break;
 			}
 		}
-
-		
 	}
-
+}
+void ALevel_generator::Gemerate_Connections() {
+	for (auto& Steps : Arr_Steps_Taken) {
+		Main_Loop_Index = Steps;
+		//Inform about connected rooms
+		Connected_Rooms Connections;
+		//Left
+		if (Arr_Connected_Rooms[Main_Loop_Index].left) {
+			Connections = Arr_Connected_Rooms[Main_Loop_Index - 1];
+			Connections.right = true;
+			Arr_Connected_Rooms[Main_Loop_Index - 1] = Connections;
+		}
+		//Right
+		if (Arr_Connected_Rooms[Main_Loop_Index].right) {
+			Connections = Arr_Connected_Rooms[Main_Loop_Index + 1];
+			Connections.left = true;
+			Arr_Connected_Rooms[Main_Loop_Index + 1] = Connections;
+		}
+		//Up
+		if (Arr_Connected_Rooms[Main_Loop_Index].up) {
+			Connections = Arr_Connected_Rooms[Main_Loop_Index - Level_Dimensions.X];
+			Connections.down = true;
+			Arr_Connected_Rooms[Main_Loop_Index - Level_Dimensions.X] = Connections;
+		}
+		//Down
+		if (Arr_Connected_Rooms[Main_Loop_Index].down) {
+			Connections = Arr_Connected_Rooms[Main_Loop_Index + Level_Dimensions.X];
+			Connections.up = true;
+			Arr_Connected_Rooms[Main_Loop_Index + Level_Dimensions.X] = Connections;
+		}
+	}
 }
 
 void ALevel_generator::SetVariablesStart() {

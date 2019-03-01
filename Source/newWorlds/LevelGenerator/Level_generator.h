@@ -25,7 +25,8 @@ protected:
 	bool IsFirstRoom();
 
 private:	
-	void Generate_Level();
+	void Generate_Layout();
+	void Gemerate_Connections();
 	//LRUD - left right up down
 	void LRUD_sequence();
 	bool IsMoveNotStuck(); //TRUE - choose, FALSE - try again
