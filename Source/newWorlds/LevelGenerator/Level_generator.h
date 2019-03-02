@@ -27,6 +27,8 @@ protected:
 private:	
 	void Generate_Layout();
 	void Gemerate_Connections();
+	void Inform_Connected_Rooms();
+	void Movement_Connections_Sequence();
 	//LRUD - left right up down
 	void LRUD_sequence();
 	bool IsMoveNotStuck(); //TRUE - choose, FALSE - try again

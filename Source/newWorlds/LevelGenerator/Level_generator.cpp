@@ -73,8 +73,24 @@ void ALevel_generator::Generate_Layout() {
 	}
 }
 void ALevel_generator::Gemerate_Connections() {
-	for (auto& Steps : Arr_Steps_Taken) {
-		Main_Loop_Index = Steps;
+	Inform_Connected_Rooms();
+
+	//Connect rooms together
+
+	for (int i = 0; i < Extra_Connections; i++) {
+		Extra_Connections_Attempts = 0;
+		Current_Room = Arr_Steps_Taken[FMath::RandRange(0, Number_of_Rooms)];
+		Extra_Connections_Attempts += 1;
+
+		Movement_Connections_Sequence();
+	}
+
+}
+
+void ALevel_generator::Inform_Connected_Rooms()
+{
+	for (auto& Step : Arr_Steps_Taken) {
+		Main_Loop_Index = Step;
 		//Inform about connected rooms
 		Connected_Rooms Connections;
 		//Left
@@ -103,7 +119,64 @@ void ALevel_generator::Gemerate_Connections() {
 		}
 	}
 }
-
+void ALevel_generator::Movement_Connections_Sequence() {
+	//LEFT
+	//if can move to left
+	if ((Current_Room % (int32)Level_Dimensions.X) > 0) {
+		if (Arr_Connected_Rooms[Current_Room].left) {
+			Arr_Movement_Directions.Add(false);
+		}
+		else {
+			//Add movement option left if room to the left is not connected to current already and there is room placed
+			Arr_Movement_Directions.Add(Arr_Rooms_Placed[Current_Room - 1]);
+		}
+	}
+	else {
+		Arr_Movement_Directions.Add(false);
+	}
+	//RIGHT
+	//if can move to right
+	if ((Current_Room % (int32)Level_Dimensions.X) < ((int32)Level_Dimensions.X - 1)) {
+		if (Arr_Connected_Rooms[Current_Room].right) {
+			Arr_Movement_Directions.Add(false);
+		}
+		else {
+			//Add movement option right if room to the right is not connected to current already and there is room placed
+			Arr_Movement_Directions.Add(Arr_Rooms_Placed[Current_Room + 1]);
+		}
+	}
+	else {
+		Arr_Movement_Directions.Add(false);
+	}
+	//UP
+	//if can move up
+	if (Current_Room >= (int32)Level_Dimensions.X) {
+		if (Arr_Connected_Rooms[Current_Room].up) {
+			Arr_Movement_Directions.Add(false);
+		}
+		else {
+			//Add movement option up if room up is not connected to current already and there is room placed
+			Arr_Movement_Directions.Add(Arr_Rooms_Placed[Current_Room - (int32)Level_Dimensions.X]);
+		}
+	}
+	else {
+		Arr_Movement_Directions.Add(false);
+	}
+	//DOWN
+	//if can move down
+	if (Current_Room < ((int32)Level_Dimensions.X * ((int32)Level_Dimensions.Y - 1))) {
+		if (Arr_Connected_Rooms[Current_Room].down) {
+			Arr_Movement_Directions.Add(false);
+		}
+		else {
+			//Add movement option up if room down is not connected to current already and there is room placed
+			Arr_Movement_Directions.Add(Arr_Rooms_Placed[Current_Room + (int32)Level_Dimensions.X]);
+		}
+	}
+	else {
+		Arr_Movement_Directions.Add(false);
+	}
+}
 void ALevel_generator::SetVariablesStart() {
 	/*
 		
@@ -228,13 +301,13 @@ void ALevel_generator::LRUD_sequence() {
 		Arr_Movement_Directions.Empty();
 		Move_Options = 0;
 		//TODO check if its working properly
-		//LRUD_sequence();	//!!
+			
+		LRUD_sequence();	//!!
 	}
 
 	
 
 }
-
 
 bool ALevel_generator::IsMoveNotStuck() {
 	//TRUE - choose, FALSE - try again
