@@ -25,6 +25,7 @@ protected:
 	bool IsFirstRoom();
 
 private:	
+	const int MAX_CONNECTIONS_ATTEMPTS = 32;
 	void Generate_Layout();
 	void Gemerate_Connections();
 	void Inform_Connected_Rooms();
