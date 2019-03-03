@@ -16,6 +16,9 @@ public:
 	ALevel_generator();
 
 	void PrintLogs();
+
+	UPROPERTY(EditDefaultsOnly, Category = Rooms)
+		TSubclassOf<AActor> Room_1_connection;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -35,6 +38,8 @@ private:
 	void Spawn_Room_2_connection();
 	void Spawn_Room_3_connection();
 	void Spawn_Room_4_connection();
+
+	void PlaceRoom(TSubclassOf<AActor> Room, FVector Location, float Rotation, float Scale);
 	//LRUD - left right up down
 	void LRUD_sequence();
 	bool IsMoveNotStuck(); //TRUE - choose, FALSE - try again
@@ -73,7 +78,10 @@ private:
 	
 
 	//
+	
 	struct Connected_Rooms {
+		
+
 		bool left = false;
 		bool right = false;
 		bool up = false;

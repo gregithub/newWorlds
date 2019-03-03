@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Level_generator.h"
+#include"Engine/World.h"
 
 // Sets default values
 ALevel_generator::ALevel_generator()
@@ -441,8 +442,8 @@ void ALevel_generator::Spawn_Rooms() {
 	if (Arr_Connected_Rooms[Main_Loop_Index].down)
 		Room_Rotation = 90.f;
 
-	//TODO spawn actor
-
+	PlaceRoom(Room_1_connection, Position_Current_Room + Starting_Position, Room_Rotation, 1);
+	
 }
 void ALevel_generator::Spawn_Room_2_connection() {
 
@@ -453,6 +454,19 @@ void ALevel_generator::Spawn_Room_3_connection() {
 void ALevel_generator::Spawn_Room_4_connection() {
 
 }
+
+void ALevel_generator::PlaceRoom(TSubclassOf<AActor> Room, FVector Location, float Rotation, float Scale) {
+	AActor* Spawned = GetWorld()->SpawnActor<AActor>(Room);
+	if (Spawned) {
+		Spawned->SetActorRelativeLocation(Location);
+		Spawned->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
+		Spawned->SetActorRotation(FRotator(0, Rotation, 0));
+		Spawned->SetActorScale3D(FVector(Scale));
+		Arr_Rooms.Insert(Room, Main_Loop_Index);
+	}
+}
+
+
 void ALevel_generator::GetCords(int32& x, int32& y) {
 	float D1_arr = (float)Main_Loop_Index;
 	
