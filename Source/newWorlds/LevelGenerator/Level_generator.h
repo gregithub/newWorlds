@@ -30,6 +30,11 @@ private:
 	void Gemerate_Connections();
 	void Inform_Connected_Rooms();
 	void Movement_Connections_Sequence();
+	void Spawn_Rooms();
+	void Spawn_Room_1_connection();
+	void Spawn_Room_2_connection();
+	void Spawn_Room_3_connection();
+	void Spawn_Room_4_connection();
 	//LRUD - left right up down
 	void LRUD_sequence();
 	bool IsMoveNotStuck(); //TRUE - choose, FALSE - try again
@@ -62,6 +67,9 @@ private:
 
 	int32 Dimension_size;
 	
+	void GetCords(int32& x, int32& y);
+	int32 X_cord;
+	int32 Y_cord;
 	
 
 	//
