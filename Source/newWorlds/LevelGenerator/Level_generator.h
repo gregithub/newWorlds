@@ -5,6 +5,16 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Level_generator.generated.h"
+USTRUCT()
+struct FConnected_Rooms {
+	GENERATED_USTRUCT_BODY()
+
+
+	bool left = false;
+	bool right = false;
+	bool up = false;
+	bool down = false;
+};
 
 UCLASS()
 class NEWWORLDS_API ALevel_generator : public AActor
@@ -53,7 +63,9 @@ private:
 	bool IsMoveNotStuck(); //TRUE - choose, FALSE - try again
 	void ClearVariables();
 	//Movement
+	UPROPERTY()
 	TArray<bool> Arr_Movement_Directions;
+	UPROPERTY()
 	TArray<int32> Arr_Steps_Taken;
 
 	int32 Move_Options;
@@ -87,17 +99,11 @@ private:
 
 	//
 	
-	struct Connected_Rooms {
-		
-
-		bool left = false;
-		bool right = false;
-		bool up = false;
-		bool down = false;
-	};
-	TArray<Connected_Rooms> Arr_Connected_Rooms;
+	UPROPERTY()
+	TArray<FConnected_Rooms> Arr_Connected_Rooms;
+	UPROPERTY()
 	TArray<bool> Arr_Rooms_Placed;
-
+	UPROPERTY()
 	TArray<TSubclassOf<AActor>> Arr_Rooms;
 
 	

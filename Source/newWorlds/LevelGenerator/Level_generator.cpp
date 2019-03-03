@@ -39,7 +39,7 @@ void ALevel_generator::Generate_Layout() {
 		}
 		else {
 			//Inform about connected rooms
-			Connected_Rooms Connection;
+			FConnected_Rooms Connection;
 			if ((Current_Room - Previous_Room) == 1)
 				Connection.left = true;
 			if ((Current_Room - Previous_Room) == -1)
@@ -96,7 +96,7 @@ void ALevel_generator::Inform_Connected_Rooms()
 	for (auto& Step : Arr_Steps_Taken) {
 		Main_Loop_Index = Step;
 		//Inform about connected rooms
-		Connected_Rooms Connections;
+		FConnected_Rooms Connections;
 		//Left
 		if (Arr_Connected_Rooms[Main_Loop_Index].left) {
 			Connections = Arr_Connected_Rooms[Main_Loop_Index - 1];
@@ -566,8 +566,8 @@ bool ALevel_generator::IsFirstRoom() {
 void ALevel_generator::PrintLogs() {
 	UE_LOG(LogTemp, Warning, TEXT("Dimension_X:%d, Dimension_Y:%d, Dimension_Size:%d")
 		, (int32)Level_Dimensions.X, (int32)Level_Dimensions.Y, Dimension_size);
-	UE_LOG(LogTemp, Warning, TEXT("Rooms:%d, Rooms_Placed:%d, Connected_Rooms:%d")
-		, Arr_Rooms.Num(), Arr_Rooms_Placed.Num(), Arr_Connected_Rooms.Num());
+	UE_LOG(LogTemp, Warning, TEXT("Rooms:%d, Rooms_Placed:%d, FConnected_Rooms:%d, Main_loop_index: %d, Current_room: %d")
+		, Arr_Rooms.Num(), Arr_Rooms_Placed.Num(), Arr_Connected_Rooms.Num(),Main_Loop_Index, Current_Room);
 	UE_LOG(LogTemp, Warning, TEXT("Current_Room: %d"), Current_Room);
 	UE_LOG(LogTemp, Warning, TEXT("IsFirstRoom set: %s"),
 		(IsFirstRoom() ? TEXT("True") : TEXT("False")));
