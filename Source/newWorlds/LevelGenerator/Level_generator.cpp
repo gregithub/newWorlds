@@ -21,6 +21,8 @@ void ALevel_generator::BeginPlay()
 
 	Generate_Layout(); 
 	Gemerate_Connections();
+	Spawn_Rooms();
+	PrintLogs();
 }
 
 void ALevel_generator::Generate_Layout() {
@@ -415,24 +417,30 @@ void ALevel_generator::Spawn_Rooms() {
 			UE_LOG(LogTemp, Warning, TEXT("Error:Number of room connections : 0"));
 			break;
 		case 1:
+			UE_LOG(LogTemp, Warning, TEXT("Error:Number of room 1 connections 1"));
 			Spawn_Room_1_connection();
 			break;
 		case 2:
+			UE_LOG(LogTemp, Warning, TEXT("Error:Number of room 2 connections 2"));
 			Spawn_Room_2_connection();
 			break;
 		case 3:
+			UE_LOG(LogTemp, Warning, TEXT("Error:Number of room 3 connections 3"));
 			Spawn_Room_3_connection();
 			break;
 		case 4:
+			UE_LOG(LogTemp, Warning, TEXT("Error:Number of room 4 connections 4"));
 			Spawn_Room_4_connection();
 			break;
 		default:
 			break;
 		}
+		PrintLogs();
 
 
 	}
-}void ALevel_generator::Spawn_Room_1_connection() {
+}
+void ALevel_generator::Spawn_Room_1_connection() {
 	if (Arr_Connected_Rooms[Main_Loop_Index].left)
 		Room_Rotation = 180.f;
 	if (Arr_Connected_Rooms[Main_Loop_Index].right)
@@ -442,17 +450,68 @@ void ALevel_generator::Spawn_Rooms() {
 	if (Arr_Connected_Rooms[Main_Loop_Index].down)
 		Room_Rotation = 90.f;
 
-	PlaceRoom(Room_1_connection, Position_Current_Room + Starting_Position, Room_Rotation, 1);
+	PlaceRoom(Room_1_connection, (Position_Current_Room + Starting_Position), Room_Rotation, 1);
 	
 }
 void ALevel_generator::Spawn_Room_2_connection() {
+	//IF left and right or up and down == spawn across
+	if ((Arr_Connected_Rooms[Main_Loop_Index].left && Arr_Connected_Rooms[Main_Loop_Index].right) 
+		|| (Arr_Connected_Rooms[Main_Loop_Index].up && Arr_Connected_Rooms[Main_Loop_Index].down)) {
 
+		if (Arr_Connected_Rooms[Main_Loop_Index].left && Arr_Connected_Rooms[Main_Loop_Index].right) {
+			//TODO set rand rotation
+			Room_Rotation = 0.f;
+		}
+		else {
+			Room_Rotation = 90.f;
+		}
+
+		PlaceRoom(Room_2_connection_across, (Position_Current_Room + Starting_Position), Room_Rotation, 1);
+	}
+	else {	//spawn beside
+		if (Arr_Connected_Rooms[Main_Loop_Index].left && Arr_Connected_Rooms[Main_Loop_Index].up) Room_Rotation = 180.f;
+		if (Arr_Connected_Rooms[Main_Loop_Index].up && Arr_Connected_Rooms[Main_Loop_Index].right) Room_Rotation = 270.f;
+		if (Arr_Connected_Rooms[Main_Loop_Index].down && Arr_Connected_Rooms[Main_Loop_Index].right) Room_Rotation = 0.f;
+		if (Arr_Connected_Rooms[Main_Loop_Index].left && Arr_Connected_Rooms[Main_Loop_Index].down) Room_Rotation = 90.f;
+
+		PlaceRoom(Room_2_connection_beside, (Position_Current_Room + Starting_Position), Room_Rotation, 1);
+	}
+
+	
 }
 void ALevel_generator::Spawn_Room_3_connection() {
+	if (!Arr_Connected_Rooms[Main_Loop_Index].left)
+		Room_Rotation = 0.f;
+	if (!Arr_Connected_Rooms[Main_Loop_Index].right)
+		Room_Rotation = 180.f;
+	if (!Arr_Connected_Rooms[Main_Loop_Index].up)
+		Room_Rotation = 90.f;
+	if (!Arr_Connected_Rooms[Main_Loop_Index].down)
+		Room_Rotation = 270.f;
 
+	PlaceRoom(Room_3_connection, (Position_Current_Room + Starting_Position), Room_Rotation, 1);
 }
 void ALevel_generator::Spawn_Room_4_connection() {
+	//set random rotation
+	switch (FMath::RandRange(0,3))
+	{
+	case 0:
+		Room_Rotation = 0.f;
+		break;
+	case 1:
+		Room_Rotation = 90.f;
+		break;
+	case 2:
+		Room_Rotation = 180.f;
+		break;
+	case 3:
+		Room_Rotation = 270.f;
+		break;
+	default:
+		break;
+	}
 
+	PlaceRoom(Room_4_connection, (Position_Current_Room + Starting_Position), Room_Rotation, 1);
 }
 
 void ALevel_generator::PlaceRoom(TSubclassOf<AActor> Room, FVector Location, float Rotation, float Scale) {
@@ -506,7 +565,7 @@ bool ALevel_generator::IsFirstRoom() {
 }
 void ALevel_generator::PrintLogs() {
 	UE_LOG(LogTemp, Warning, TEXT("Dimension_X:%d, Dimension_Y:%d, Dimension_Size:%d")
-		, Level_Dimensions.X, Level_Dimensions.Y, Dimension_size);
+		, (int32)Level_Dimensions.X, (int32)Level_Dimensions.Y, Dimension_size);
 	UE_LOG(LogTemp, Warning, TEXT("Rooms:%d, Rooms_Placed:%d, Connected_Rooms:%d")
 		, Arr_Rooms.Num(), Arr_Rooms_Placed.Num(), Arr_Connected_Rooms.Num());
 	UE_LOG(LogTemp, Warning, TEXT("Current_Room: %d"), Current_Room);

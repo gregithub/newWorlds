@@ -19,6 +19,14 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = Rooms)
 		TSubclassOf<AActor> Room_1_connection;
+	UPROPERTY(EditDefaultsOnly, Category = Rooms)
+		TSubclassOf<AActor> Room_2_connection_beside;
+	UPROPERTY(EditDefaultsOnly, Category = Rooms)
+		TSubclassOf<AActor> Room_2_connection_across;
+	UPROPERTY(EditDefaultsOnly, Category = Rooms)
+		TSubclassOf<AActor> Room_3_connection;
+	UPROPERTY(EditDefaultsOnly, Category = Rooms)
+		TSubclassOf<AActor> Room_4_connection;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
