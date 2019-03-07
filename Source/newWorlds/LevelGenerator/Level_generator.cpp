@@ -16,6 +16,7 @@ ALevel_generator::ALevel_generator()
 // Called when the game starts or when spawned
 void ALevel_generator::BeginPlay()
 {
+	//TODO fix arrays and indexes?? use iterators???
 	Super::BeginPlay();
 	SetVariablesStart();
 
@@ -24,10 +25,35 @@ void ALevel_generator::BeginPlay()
 	Spawn_Rooms();
 	PrintLogs();
 }
+void ALevel_generator::SetVariablesStart() {
+	/*
 
+	*/
+
+
+	Previous_Room = -1;
+	Arr_Steps_Taken.Empty();
+
+
+
+	//TODO for each destroy actor Rooms
+	Dimension_size = Level_Dimensions.X * Level_Dimensions.Y;
+
+	Arr_Rooms.Empty();
+	Arr_Rooms.SetNum(Dimension_size);
+	Arr_Rooms_Placed.Empty();
+	Arr_Rooms_Placed.SetNum(Dimension_size);
+	Arr_Connected_Rooms.Empty();
+	Arr_Connected_Rooms.SetNum(Dimension_size);
+
+	Current_Room = GetMiddleRoom();
+
+	PrintLogs();
+}
 void ALevel_generator::Generate_Layout() {
 	for (int i = 0; i < Number_of_Rooms; i++) {
 		Main_Loop_Index = i;
+		UE_LOG(LogTemp, Log, TEXT("main loop index: %d"), Main_Loop_Index );
 
 		//Alocate room
 		Arr_Steps_Taken.Add(Current_Room);
@@ -44,9 +70,9 @@ void ALevel_generator::Generate_Layout() {
 				Connection.left = true;
 			if ((Current_Room - Previous_Room) == -1)
 				Connection.right = true;
-			if ((Current_Room - Previous_Room) == Level_Dimensions.X)
+			if ((Current_Room - Previous_Room) == (int32)Level_Dimensions.X)
 				Connection.up = true;
-			if ((Current_Room - Previous_Room) == (Level_Dimensions.X * -1))
+			if ((Current_Room - Previous_Room) == (int32)(Level_Dimensions.X * -1))
 				Connection.down = true;
 
 			Arr_Connected_Rooms[Current_Room] = Connection;
@@ -124,31 +150,6 @@ void ALevel_generator::Inform_Connected_Rooms()
 	}
 }
 
-void ALevel_generator::SetVariablesStart() {
-	/*
-		
-	*/
-	
-	
-	Previous_Room = -1;
-	Arr_Steps_Taken.Empty();
-
-	
-
-	//TODO for each destroy actor Rooms
-	Dimension_size = Level_Dimensions.X * Level_Dimensions.Y;
-
-	Arr_Rooms.Empty();
-	Arr_Rooms.SetNum(Dimension_size);
-	Arr_Rooms_Placed.Empty();
-	Arr_Rooms_Placed.SetNum(Dimension_size);
-	Arr_Connected_Rooms.Empty();
-	Arr_Connected_Rooms.SetNum(Dimension_size);
-
-	Current_Room = GetMiddleRoom();
-
-	PrintLogs();
-}
 void ALevel_generator::LRUD_sequence() {
 	//LEFT
 	//Can move to the left?
@@ -167,7 +168,7 @@ void ALevel_generator::LRUD_sequence() {
 	}
 	//RIGHT
 	//Can move to the right?
-	if ((Current_Room % (int32)Level_Dimensions.X) < (Level_Dimensions.X - 1)) {
+	if ((Current_Room % (int32)Level_Dimensions.X) < ((int32)Level_Dimensions.X - 1)) {
 		//Is room to the right?
 		if (Arr_Rooms_Placed[Current_Room + 1]) {
 			Arr_Movement_Directions.Add(false);
@@ -227,10 +228,10 @@ void ALevel_generator::LRUD_sequence() {
 						Current_Room += 1;
 						break;
 					case 2:
-						Current_Room -= Level_Dimensions.X;
+						Current_Room -= (int32)Level_Dimensions.X;
 						break;
 					case 3:
-						Current_Room += Level_Dimensions.X;
+						Current_Room += (int32)Level_Dimensions.X;
 						break;
 					default:
 						break;
@@ -260,7 +261,6 @@ void ALevel_generator::Movement_Connections_Sequence() {
 	//LEFT
 	//if can move to left
 	if ((Current_Room % (int32)Level_Dimensions.X) > 0) {
-		;
 		if (Arr_Connected_Rooms[Current_Room].left) {
 			Arr_Movement_Directions.Add(false);
 		}
@@ -387,8 +387,8 @@ void ALevel_generator::Movement_Connections_Sequence() {
 	//Movement stuck
 	else {
 		if (Extra_Connections_Attempts < MAX_CONNECTIONS_ATTEMPTS) {
-			UE_LOG(LogTemp, Warning, TEXT("ERROR:Cannot add more connections to rooms."))
-				Arr_Movement_Directions.Empty();
+			UE_LOG(LogTemp, Warning, TEXT("ERROR:Cannot add more connections to rooms."));
+			Arr_Movement_Directions.Empty();
 			Move_Options = 0;
 			//TODO break loop
 		}
@@ -405,6 +405,8 @@ void ALevel_generator::Spawn_Rooms() {
 		Main_Loop_Index = Steps;
 		GetCords(X_cord, Y_cord);
 		Position_Current_Room = FVector(X_cord*Room_Dimensions.X, Y_cord*Room_Dimensions.Y,0);
+		UE_LOG(LogTemp, Display, TEXT
+		("Possition current room: %s, Current room: %d"), *Position_Current_Room.ToString(), Current_Room);
 		int room_connections = 0;
 		if (Arr_Connected_Rooms[Main_Loop_Index].left) room_connections++;
 		if (Arr_Connected_Rooms[Main_Loop_Index].right) room_connections++;
@@ -414,22 +416,22 @@ void ALevel_generator::Spawn_Rooms() {
 
 		switch (room_connections){
 		case 0:
-			UE_LOG(LogTemp, Warning, TEXT("Error:Number of room connections : 0"));
+			UE_LOG(LogTemp, Warning, TEXT("Error:Number of room connections : 0 (this shouldn't be happening)"));
 			break;
 		case 1:
-			UE_LOG(LogTemp, Warning, TEXT("Error:Number of room 1 connections 1"));
+			UE_LOG(LogTemp, Warning, TEXT("Number of room 1 connections. spawning"));
 			Spawn_Room_1_connection();
 			break;
 		case 2:
-			UE_LOG(LogTemp, Warning, TEXT("Error:Number of room 2 connections 2"));
+			UE_LOG(LogTemp, Warning, TEXT("Number of room 2 connections. spawning"));
 			Spawn_Room_2_connection();
 			break;
 		case 3:
-			UE_LOG(LogTemp, Warning, TEXT("Error:Number of room 3 connections 3"));
+			UE_LOG(LogTemp, Warning, TEXT("Number of room 3 connections. spawning"));
 			Spawn_Room_3_connection();
 			break;
 		case 4:
-			UE_LOG(LogTemp, Warning, TEXT("Error:Number of room 4 connections 4"));
+			UE_LOG(LogTemp, Warning, TEXT("Number of room 4 connections. spawning"));
 			Spawn_Room_4_connection();
 			break;
 		default:
@@ -525,12 +527,11 @@ void ALevel_generator::PlaceRoom(TSubclassOf<AActor> Room, FVector Location, flo
 	}
 }
 
-
 void ALevel_generator::GetCords(int32& x, int32& y) {
 	float D1_arr = (float)Main_Loop_Index;
 	
 	float y_cord_func = D1_arr / Level_Dimensions.X;
-	floor(y_cord_func);
+	y_cord_func = floor(y_cord_func);
 
 
 	x = (int32)floor(D1_arr - (y_cord_func * Level_Dimensions.X));
