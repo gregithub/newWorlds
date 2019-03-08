@@ -118,7 +118,7 @@ void ALevel_generator::Gemerate_Connections() {
 
 	for (int i = 0; i < Extra_Connections; i++) {
 		Extra_Connections_Attempts = 0;
-		Current_Room = Arr_Steps_Taken[FMath::RandRange(0, Number_of_Rooms)];
+		Current_Room = Arr_Steps_Taken[FMath::RandRange(0, (Number_of_Rooms-1))]; //-1 so it doesn't exceed indexes of Arr_Steps_Taken
 		Extra_Connections_Attempts += 1;
 
 		Movement_Connections_Sequence();
