@@ -37,27 +37,37 @@ void ALevel_generator::SetVariablesStart() {
 
 
 	//TODO for each destroy actor Rooms
-	Dimension_size = Level_Dimensions.X * Level_Dimensions.Y;
+	
+	Dimension_size = (int32)Level_Dimensions.X * (int32)Level_Dimensions.Y;
 
 	Arr_Rooms.Empty();
-	Arr_Rooms.SetNum(Dimension_size);
+	Arr_Rooms.SetNum(Dimension_size,false);
 	Arr_Rooms_Placed.Empty();
-	Arr_Rooms_Placed.SetNum(Dimension_size);
+	Arr_Rooms_Placed.SetNum(Dimension_size,false);
+	for (int i = 0; i < Arr_Rooms_Placed.Num(); i++) {
+		UE_LOG(LogTemp, Log, TEXT("Arr_Rooms_placed: %d %d"), i, Arr_Rooms_Placed[i]);
+	}
 	Arr_Connected_Rooms.Empty();
-	Arr_Connected_Rooms.SetNum(Dimension_size);
+	Arr_Connected_Rooms.SetNum(Dimension_size,false);
 
 	Current_Room = GetMiddleRoom();
 
-	PrintLogs();
+	UE_LOG(LogTemp, Warning, TEXT("Dimension_X:%d, Dimension_Y:%d, Dimension_Size:%d")
+		, (int32)Level_Dimensions.X, (int32)Level_Dimensions.Y, Dimension_size);
+	UE_LOG(LogTemp, Warning, TEXT("Rooms:%d, Rooms_Placed:%d, FConnected_Rooms:%d, Main_loop_index: %d, Current_room: %d")
+		, Arr_Rooms.Num(), Arr_Rooms_Placed.Num(), Arr_Connected_Rooms.Num(), Main_Loop_Index, Current_Room);
+	UE_LOG(LogTemp, Warning, TEXT("IsFirstRoom set: %s"),
+		(IsFirstRoom() ? TEXT("True") : TEXT("False")));
 }
 void ALevel_generator::Generate_Layout() {
 	for (int i = 0; i < Number_of_Rooms; i++) {
 		Main_Loop_Index = i;
-		UE_LOG(LogTemp, Log, TEXT("main loop index: %d"), Main_Loop_Index );
+		UE_LOG(LogTemp, Log, TEXT("main loop index: %d, current room: %d"), Main_Loop_Index , Current_Room);
 
 		//Alocate room
 		Arr_Steps_Taken.Add(Current_Room);
-		Arr_Rooms_Placed.Insert(true, Current_Room);
+	
+		Arr_Rooms_Placed[Current_Room] = true;
 
 
 		if (IsFirstRoom()) {
@@ -403,10 +413,12 @@ void ALevel_generator::Movement_Connections_Sequence() {
 void ALevel_generator::Spawn_Rooms() {
 	for (auto& Steps : Arr_Steps_Taken) {
 		Main_Loop_Index = Steps;
+
+		//calculating x and y based on steps taken
 		GetCords(X_cord, Y_cord);
 		Position_Current_Room = FVector(X_cord*Room_Dimensions.X, Y_cord*Room_Dimensions.Y,0);
 		UE_LOG(LogTemp, Display, TEXT
-		("Possition current room: %s, Current room: %d"), *Position_Current_Room.ToString(), Current_Room);
+		("Possition current room: %s, Step: %d"), *Position_Current_Room.ToString(), Steps);
 		int room_connections = 0;
 		if (Arr_Connected_Rooms[Main_Loop_Index].left) room_connections++;
 		if (Arr_Connected_Rooms[Main_Loop_Index].right) room_connections++;
@@ -438,7 +450,9 @@ void ALevel_generator::Spawn_Rooms() {
 			break;
 		}
 		PrintLogs();
-
+		for (int i = 0; i < Arr_Rooms_Placed.Num(); i++) {
+			UE_LOG(LogTemp, Log, TEXT("Arr_Rooms_placed: %d %d"), i, Arr_Rooms_Placed[i]);
+		}
 
 	}
 }
@@ -523,7 +537,7 @@ void ALevel_generator::PlaceRoom(TSubclassOf<AActor> Room, FVector Location, flo
 		Spawned->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
 		Spawned->SetActorRotation(FRotator(0, Rotation, 0));
 		Spawned->SetActorScale3D(FVector(Scale));
-		Arr_Rooms.Insert(Room, Main_Loop_Index);
+		Arr_Rooms[Main_Loop_Index] = Room;
 	}
 }
 
@@ -567,11 +581,8 @@ bool ALevel_generator::IsFirstRoom() {
 void ALevel_generator::PrintLogs() {
 	UE_LOG(LogTemp, Warning, TEXT("Dimension_X:%d, Dimension_Y:%d, Dimension_Size:%d")
 		, (int32)Level_Dimensions.X, (int32)Level_Dimensions.Y, Dimension_size);
-	UE_LOG(LogTemp, Warning, TEXT("Rooms:%d, Rooms_Placed:%d, FConnected_Rooms:%d, Main_loop_index: %d, Current_room: %d")
-		, Arr_Rooms.Num(), Arr_Rooms_Placed.Num(), Arr_Connected_Rooms.Num(),Main_Loop_Index, Current_Room);
-	UE_LOG(LogTemp, Warning, TEXT("Current_Room: %d"), Current_Room);
-	UE_LOG(LogTemp, Warning, TEXT("IsFirstRoom set: %s"),
-		(IsFirstRoom() ? TEXT("True") : TEXT("False")));
+	UE_LOG(LogTemp, Warning, TEXT("Rooms:%d, Rooms_Placed:%d, FConnected_Rooms:%d, Main_loop_index: %d")
+		, Arr_Rooms.Num(), Arr_Rooms_Placed.Num(), Arr_Connected_Rooms.Num(),Main_Loop_Index);
 }
 void ALevel_generator::ClearVariables() {
 	Arr_Movement_Directions.Empty();
