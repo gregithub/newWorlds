@@ -16,7 +16,6 @@ ALevel_generator::ALevel_generator()
 // Called when the game starts or when spawned
 void ALevel_generator::BeginPlay()
 {
-	//TODO fix arrays and indexes?? use iterators???
 	Super::BeginPlay();
 	SetVariablesStart();
 
@@ -29,26 +28,17 @@ void ALevel_generator::SetVariablesStart() {
 	/*
 
 	*/
-
-
 	Previous_Room = -1;
-	Arr_Steps_Taken.Empty();
-
-
-
-	//TODO for each destroy actor Rooms
-	
+	Arr_Steps_Taken.Empty();	
 	Dimension_size = (int32)Level_Dimensions.X * (int32)Level_Dimensions.Y;
 
 	Arr_Rooms.Empty();
-	Arr_Rooms.SetNum(Dimension_size,false);
+	Arr_Rooms.SetNum(Dimension_size);
 	Arr_Rooms_Placed.Empty();
-	Arr_Rooms_Placed.SetNum(Dimension_size,false);
-	for (int i = 0; i < Arr_Rooms_Placed.Num(); i++) {
-		UE_LOG(LogTemp, Log, TEXT("Arr_Rooms_placed: %d %d"), i, Arr_Rooms_Placed[i]);
-	}
+	Arr_Rooms_Placed.SetNum(Dimension_size);
+	
 	Arr_Connected_Rooms.Empty();
-	Arr_Connected_Rooms.SetNum(Dimension_size,false);
+	Arr_Connected_Rooms.SetNum(Dimension_size);
 
 	Current_Room = GetMiddleRoom();
 
@@ -252,15 +242,17 @@ void ALevel_generator::LRUD_sequence() {
 		}
 	}
 	else { //try again
-		Main_Loop_Index -= Main_Loop_Index;
-		Current_Room = Arr_Steps_Taken[Main_Loop_Index];
+		if (Main_Loop_Index > 0) {
+			Main_Loop_Index -= Main_Loop_Index;
+			Current_Room = Arr_Steps_Taken[Main_Loop_Index];
 
-		//Reset 
-		Arr_Movement_Directions.Empty();
-		Move_Options = 0;
-		//TODO check if its working properly
-			
-		LRUD_sequence();	//!!
+			//Reset 
+			Arr_Movement_Directions.Empty();
+			Move_Options = 0;
+			//TODO check if its working properly
+
+			LRUD_sequence();	//!!
+		}
 	}
 
 	
@@ -417,8 +409,7 @@ void ALevel_generator::Spawn_Rooms() {
 		//calculating x and y based on steps taken
 		GetCords(X_cord, Y_cord);
 		Position_Current_Room = FVector(X_cord*Room_Dimensions.X, Y_cord*Room_Dimensions.Y,0);
-		UE_LOG(LogTemp, Display, TEXT
-		("Possition current room: %s, Step: %d"), *Position_Current_Room.ToString(), Steps);
+		
 		int room_connections = 0;
 		if (Arr_Connected_Rooms[Main_Loop_Index].left) room_connections++;
 		if (Arr_Connected_Rooms[Main_Loop_Index].right) room_connections++;
@@ -449,10 +440,7 @@ void ALevel_generator::Spawn_Rooms() {
 		default:
 			break;
 		}
-		PrintLogs();
-		for (int i = 0; i < Arr_Rooms_Placed.Num(); i++) {
-			UE_LOG(LogTemp, Log, TEXT("Arr_Rooms_placed: %d %d"), i, Arr_Rooms_Placed[i]);
-		}
+		
 
 	}
 }
@@ -466,7 +454,10 @@ void ALevel_generator::Spawn_Room_1_connection() {
 	if (Arr_Connected_Rooms[Main_Loop_Index].down)
 		Room_Rotation = 90.f;
 
+	UE_LOG(LogTemp, Display, TEXT
+	("Spawning 1_connection room. Possition current room: %s, Main_Loop_Index: %d"), *Position_Current_Room.ToCompactString(), Main_Loop_Index);
 	PlaceRoom(Room_1_connection, (Position_Current_Room + Starting_Position), Room_Rotation, 1);
+
 	
 }
 void ALevel_generator::Spawn_Room_2_connection() {
@@ -481,7 +472,8 @@ void ALevel_generator::Spawn_Room_2_connection() {
 		else {
 			Room_Rotation = 90.f;
 		}
-
+		UE_LOG(LogTemp, Display, TEXT
+		("Spawning 2_connection room(across). Possition current room: %s, Main_Loop_Index: %d"), *Position_Current_Room.ToCompactString(), Main_Loop_Index);
 		PlaceRoom(Room_2_connection_across, (Position_Current_Room + Starting_Position), Room_Rotation, 1);
 	}
 	else {	//spawn beside
@@ -490,6 +482,8 @@ void ALevel_generator::Spawn_Room_2_connection() {
 		if (Arr_Connected_Rooms[Main_Loop_Index].down && Arr_Connected_Rooms[Main_Loop_Index].right) Room_Rotation = 0.f;
 		if (Arr_Connected_Rooms[Main_Loop_Index].left && Arr_Connected_Rooms[Main_Loop_Index].down) Room_Rotation = 90.f;
 
+		UE_LOG(LogTemp, Display, TEXT
+		("Spawning 2_connection room(beside). Possition current room: %s, Main_Loop_Index: %d"), *Position_Current_Room.ToCompactString(), Main_Loop_Index);
 		PlaceRoom(Room_2_connection_beside, (Position_Current_Room + Starting_Position), Room_Rotation, 1);
 	}
 
@@ -505,6 +499,8 @@ void ALevel_generator::Spawn_Room_3_connection() {
 	if (!Arr_Connected_Rooms[Main_Loop_Index].down)
 		Room_Rotation = 270.f;
 
+	UE_LOG(LogTemp, Display, TEXT
+	("Spawning 3_connection room. Possition current room: %s, Main_Loop_Index: %d"), *Position_Current_Room.ToCompactString(), Main_Loop_Index);
 	PlaceRoom(Room_3_connection, (Position_Current_Room + Starting_Position), Room_Rotation, 1);
 }
 void ALevel_generator::Spawn_Room_4_connection() {
@@ -527,6 +523,8 @@ void ALevel_generator::Spawn_Room_4_connection() {
 		break;
 	}
 
+	UE_LOG(LogTemp, Display, TEXT
+	("Spawning 4_connection room. Possition current room: %s, Main_Loop_Index: %d"), *Position_Current_Room.ToCompactString(), Main_Loop_Index);
 	PlaceRoom(Room_4_connection, (Position_Current_Room + Starting_Position), Room_Rotation, 1);
 }
 
