@@ -25,7 +25,7 @@ public:
 	// Sets default values for this actor's properties
 	ALevel_generator();
 
-	void PrintLogs();
+	void Print_Logs();
 
 	UPROPERTY(EditDefaultsOnly, Category = Rooms)
 		TSubclassOf<AActor> Room_1_connection;
@@ -40,17 +40,18 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	void SetVariablesStart(); 
+	void Set_Variables_Start(); 
 
-	int GetMiddleRoom();
-	bool IsFirstRoom();
+	int Get_Middle_Room();
+	bool bIs_First_Room();
 
 private:	
-	const int MAX_CONNECTIONS_ATTEMPTS = 32;
+	const int32 MAX_CONNECTIONS_ATTEMPTS = 32;
 	void Generate_Layout();
 	void Gemerate_Connections();
 	void Inform_Connected_Rooms();
 	void Movement_Connections_Sequence();
+
 	void Spawn_Rooms();
 	void Spawn_Room_1_connection();
 	void Spawn_Room_2_connection();
@@ -60,8 +61,8 @@ private:
 	void PlaceRoom(TSubclassOf<AActor> Room, FVector Location, float Rotation, float Scale);
 	//LRUD - left right up down
 	void LRUD_sequence();
-	bool IsMoveNotStuck(); //TRUE - choose, FALSE - try again
-	void ClearVariables();
+	bool bIs_Move_Not_Stuck(); //TRUE - choose, FALSE - try again
+	void Clear_Variables();
 	//Movement
 	UPROPERTY()
 	TArray<bool> Arr_Movement_Directions;

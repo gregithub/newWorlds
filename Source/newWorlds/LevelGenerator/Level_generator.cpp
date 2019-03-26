@@ -17,14 +17,17 @@ ALevel_generator::ALevel_generator()
 void ALevel_generator::BeginPlay()
 {
 	Super::BeginPlay();
-	SetVariablesStart();
-
+	Set_Variables_Start();
+	UE_LOG(LogTemp, Error, TEXT("Variables Set"));
 	Generate_Layout(); 
+	UE_LOG(LogTemp, Error, TEXT("Layout generated"));
 	Gemerate_Connections();
+	UE_LOG(LogTemp, Error, TEXT("Connections generated"));
 	Spawn_Rooms();
-	PrintLogs();
+	UE_LOG(LogTemp, Error, TEXT("Rooms Spawned"));
+	Print_Logs();
 }
-void ALevel_generator::SetVariablesStart() {
+void ALevel_generator::Set_Variables_Start() {
 	/*
 
 	*/
@@ -40,14 +43,14 @@ void ALevel_generator::SetVariablesStart() {
 	Arr_Connected_Rooms.Empty();
 	Arr_Connected_Rooms.SetNum(Dimension_size);
 
-	Current_Room = GetMiddleRoom();
+	Current_Room = Get_Middle_Room();
 
 	UE_LOG(LogTemp, Warning, TEXT("Dimension_X:%d, Dimension_Y:%d, Dimension_Size:%d")
 		, (int32)Level_Dimensions.X, (int32)Level_Dimensions.Y, Dimension_size);
 	UE_LOG(LogTemp, Warning, TEXT("Rooms:%d, Rooms_Placed:%d, FConnected_Rooms:%d, Main_loop_index: %d, Current_room: %d")
 		, Arr_Rooms.Num(), Arr_Rooms_Placed.Num(), Arr_Connected_Rooms.Num(), Main_Loop_Index, Current_Room);
 	UE_LOG(LogTemp, Warning, TEXT("IsFirstRoom set: %s"),
-		(IsFirstRoom() ? TEXT("True") : TEXT("False")));
+		(bIs_First_Room() ? TEXT("True") : TEXT("False")));
 }
 void ALevel_generator::Generate_Layout() {
 	for (int i = 0; i < Number_of_Rooms; i++) {
@@ -60,7 +63,7 @@ void ALevel_generator::Generate_Layout() {
 		Arr_Rooms_Placed[Current_Room] = true;
 
 
-		if (IsFirstRoom()) {
+		if (bIs_First_Room()) {
 			LRUD_sequence();
 		}
 		else {
@@ -80,8 +83,10 @@ void ALevel_generator::Generate_Layout() {
 			//Check if map is full
 
 			if (Arr_Steps_Taken.Num() < (Level_Dimensions.X * Level_Dimensions.Y)){
+
 				//Random chance to step back
 				if (FMath::RandRange(0.f, 1.f) > Branch_Chance) {
+					UE_LOG(LogTemp, Warning, TEXT("HERE"));
 					LRUD_sequence();
 				}
 				else {
@@ -94,7 +99,7 @@ void ALevel_generator::Generate_Layout() {
 				}
 			}
 			else {
-				//break main loop if full
+				
 				UE_LOG(LogTemp, Warning, TEXT("MAP IS FULL"));
 				break;
 			}
@@ -168,7 +173,7 @@ void ALevel_generator::LRUD_sequence() {
 	}
 	//RIGHT
 	//Can move to the right?
-	if ((Current_Room % (int32)Level_Dimensions.X) < ((int32)Level_Dimensions.X - 1)) {
+	if (( (Current_Room % (int32)Level_Dimensions.X)) < ((int32)Level_Dimensions.X - 1)) {
 		//Is room to the right?
 		if (Arr_Rooms_Placed[Current_Room + 1]) {
 			Arr_Movement_Directions.Add(false);
@@ -211,7 +216,7 @@ void ALevel_generator::LRUD_sequence() {
 		Arr_Movement_Directions.Add(false);
 	}
 
-	if (IsMoveNotStuck()) { //choose
+	if (bIs_Move_Not_Stuck()) { //choose
 		//Choose random direction to move
 		Move_Choice = FMath::RandRange(1, Move_Options);
 		for (int32 index = 0; index <= Arr_Movement_Directions.Num(); index++) {
@@ -236,20 +241,20 @@ void ALevel_generator::LRUD_sequence() {
 					default:
 						break;
 					}
-					ClearVariables();
+					Clear_Variables();
 				}
 			}
 		}
 	}
 	else { //try again
 		if (Main_Loop_Index > 0) {
-			Main_Loop_Index -= Main_Loop_Index;
+
+			Main_Loop_Index -= 1;
 			Current_Room = Arr_Steps_Taken[Main_Loop_Index];
 
 			//Reset 
 			Arr_Movement_Directions.Empty();
 			Move_Options = 0;
-			//TODO check if its working properly
 
 			LRUD_sequence();	//!!
 		}
@@ -318,7 +323,7 @@ void ALevel_generator::Movement_Connections_Sequence() {
 	}
 
 
-	if (IsMoveNotStuck()) {
+	if (bIs_Move_Not_Stuck()) {
 		Move_Choice = FMath::RandRange(1, Move_Options);
 		for (int index = 0; index < Arr_Movement_Directions.Num(); index++) {
 			if (Arr_Movement_Directions[index]) {
@@ -381,7 +386,7 @@ void ALevel_generator::Movement_Connections_Sequence() {
 						break;
 					}
 
-					ClearVariables();
+					Clear_Variables();
 				}
 			}
 		}
@@ -410,7 +415,7 @@ void ALevel_generator::Spawn_Rooms() {
 		GetCords(X_cord, Y_cord);
 		Position_Current_Room = FVector(X_cord*Room_Dimensions.X, Y_cord*Room_Dimensions.Y,0);
 		
-		int room_connections = 0;
+		int32 room_connections = 0;
 		if (Arr_Connected_Rooms[Main_Loop_Index].left) room_connections++;
 		if (Arr_Connected_Rooms[Main_Loop_Index].right) room_connections++;
 		if (Arr_Connected_Rooms[Main_Loop_Index].down) room_connections++;
@@ -422,19 +427,15 @@ void ALevel_generator::Spawn_Rooms() {
 			UE_LOG(LogTemp, Warning, TEXT("Error:Number of room connections : 0 (this shouldn't be happening)"));
 			break;
 		case 1:
-			UE_LOG(LogTemp, Warning, TEXT("Number of room 1 connections. spawning"));
 			Spawn_Room_1_connection();
 			break;
 		case 2:
-			UE_LOG(LogTemp, Warning, TEXT("Number of room 2 connections. spawning"));
 			Spawn_Room_2_connection();
 			break;
 		case 3:
-			UE_LOG(LogTemp, Warning, TEXT("Number of room 3 connections. spawning"));
 			Spawn_Room_3_connection();
 			break;
 		case 4:
-			UE_LOG(LogTemp, Warning, TEXT("Number of room 4 connections. spawning"));
 			Spawn_Room_4_connection();
 			break;
 		default:
@@ -550,8 +551,9 @@ void ALevel_generator::GetCords(int32& x, int32& y) {
 	y = (int32)y_cord_func;
 }
 
-bool ALevel_generator::IsMoveNotStuck() {
+bool ALevel_generator::bIs_Move_Not_Stuck() {
 	//TRUE - choose, FALSE - try again
+	Move_Options = 0;
 	for (auto& Mov : Arr_Movement_Directions) {
 		if (Mov) {
 			Move_Options += 1;
@@ -565,7 +567,7 @@ bool ALevel_generator::IsMoveNotStuck() {
 	}
 }
 
-int ALevel_generator::GetMiddleRoom() {
+int ALevel_generator::Get_Middle_Room() {
 	float varX = Level_Dimensions.X * 0.5;
 	float varY = Level_Dimensions.Y * 0.5;
 	varX = floor(varX);
@@ -573,16 +575,16 @@ int ALevel_generator::GetMiddleRoom() {
 
 	return varX + (varY*Level_Dimensions.X);
 }
-bool ALevel_generator::IsFirstRoom() {
+bool ALevel_generator::bIs_First_Room() {
 	return Previous_Room == -1;
 }
-void ALevel_generator::PrintLogs() {
+void ALevel_generator::Print_Logs() {
 	UE_LOG(LogTemp, Warning, TEXT("Dimension_X:%d, Dimension_Y:%d, Dimension_Size:%d")
 		, (int32)Level_Dimensions.X, (int32)Level_Dimensions.Y, Dimension_size);
 	UE_LOG(LogTemp, Warning, TEXT("Rooms:%d, Rooms_Placed:%d, FConnected_Rooms:%d, Main_loop_index: %d")
 		, Arr_Rooms.Num(), Arr_Rooms_Placed.Num(), Arr_Connected_Rooms.Num(),Main_Loop_Index);
 }
-void ALevel_generator::ClearVariables() {
+void ALevel_generator::Clear_Variables() {
 	Arr_Movement_Directions.Empty();
 	Move_Options = 0;
 	Movement_Direction_Search = 0;
